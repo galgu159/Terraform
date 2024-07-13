@@ -1,0 +1,6 @@
+flask
+boto3
+requests
+loguru
+pyyaml
+pymongo  # For bson (json_util)
