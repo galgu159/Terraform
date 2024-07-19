@@ -17,8 +17,9 @@ logger = logging.getLogger(__name__)
 
 images_bucket = os.environ['BUCKET_NAME']
 queue_name = os.environ['SQS_QUEUE_NAME']
+region_name = os.environ['REGION']
 
-sqs_client = boto3.client('sqs', region_name='eu-west-3')
+sqs_client = boto3.client('sqs', region_name=region_name)
 
 with open("data/coco128.yaml", "r") as stream:
     names = yaml.safe_load(stream)['names']
@@ -105,13 +106,14 @@ def consume():
                     'unique_filename': unique_filename,
                     'time': Decimal(time.time())
                 }
+
                 # TODO store the prediction_summary in a DynamoDB table
                 # TODO perform a GET request to Polybot to `/results` endpoint
                 # Store the prediction_summary in a DynamoDB table
-                dynamodb = boto3.resource('dynamodb', region_name='eu-west-3')
-                logger.info({dynamodb})
-                table = dynamodb.Table('galgu-PolybotService-DynamoDB')
-                logger.info({table})
+                dynamodb = boto3.resource('dynamodb', region_name=region_name)
+                logger.info(f"DynamoDB Resource: {dynamodb}")
+                table = dynamodb.Table('galgu-PolybotService-DynamoDB-tf')
+                logger.info(f"DynamoDB Table: {table}")
                 table.put_item(Item=prediction_summary)
 
                 # Send the message from my yolo5 to load balancer:

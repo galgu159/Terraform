@@ -1,12 +1,10 @@
 variable "vpc_id" {
   description = "The ID of the VPC where the security group should be created."
 }
-
-variable "public_subnet_cidrs" {
-  description = "List of public subnet CIDRs."
+variable "public_subnet_ids" {
+  description = "The IDs of the public subnets"
   type        = list(string)
 }
-
 variable "instance_ami_polybot" {
   description = "AMI ID for the instance."
   type        = string
@@ -23,12 +21,18 @@ variable "key_pair_name_polybot" {
 }
 
 variable "iam_role_name" {
-  description = "IAM Role name for the instance profile."
-  type        = string
-  default     = "galgu-role-terraform"
+  description = "IAM Role name for the instance"
+  type = string
+  default = "galgu-role-tf"
 }
 
-variable "availability_zones" {
-  description = "List of availability zones."
-  type        = list(string)
+variable "certificate_arn" {
+  description = "certificate arn"
+  type        = string
+}
+# Route 53 Records
+variable "domain_name" {
+  description = "domain name for the route 53"
+  type        = string
+  default = "galgu.int-devops.click"
 }

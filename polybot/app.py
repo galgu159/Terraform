@@ -35,7 +35,7 @@ def get_secret():
         raise e
 
     secret = get_secret_value_response['SecretString']
-
+    print(secret)
     return secret
 
 
@@ -47,7 +47,8 @@ else:
     print("Failed to retrieve the secret")
 
 TELEGRAM_APP_URL = os.environ['TELEGRAM_APP_URL']
-
+print(TELEGRAM_TOKEN)
+print(TELEGRAM_APP_URL)
 
 @app.route('/', methods=['GET'])
 def index():
@@ -87,12 +88,12 @@ def results():
 
             bot.send_text(chat_id, text_results)
 
-            file_name = os.path.basename(item['unique_filename'])
-            S3_PREDICTED_URL = "https://galgu-bucket.s3.eu-north-1.amazonaws.com/"
-            s3_full_url = f"{S3_PREDICTED_URL}{file_name}"
+            # file_name = os.path.basename(item['unique_filename'])
+            # S3_PREDICTED_URL = "https://galgu-bucket.s3.eu-north-1.amazonaws.com/"
+            # s3_full_url = f"{S3_PREDICTED_URL}{file_name}"
 
-            bot.send_text(chat_id, "You can download the predicted image here:")
-            bot.send_text(chat_id, s3_full_url)
+            # bot.send_text(chat_id, "You can download the predicted image here:")
+            # bot.send_text(chat_id, s3_full_url)
             return 'Ok'
         else:
             return 'No results found', 404

@@ -1,0 +1,35 @@
+# This is the main pipeline. It should be manually triggered from the GitHub Actions tab, while selecting the regions where you want to provision the infrastructure.
+name: Main Pipeline
+
+on:
+  workflow_dispatch:  # Allows manual triggering from the Actions tab
+
+jobs:
+  select_regions_and_trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Select Regions
+        id: region_input
+        run: |
+          echo "Which regions do you want to provision infrastructure for?"
+          echo "::set-output name=selected_regions::$(echo 'us-east-2, eu-west-3' | tr ',' '\n')" 
+
+      - name: Trigger Polybot Infrastructure Terraform Specific Region
+        uses: actions/github-script@0.9.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const regions = '${{ steps.region_input.outputs.selected_regions }}'.split(',');
+            for (const region of regions) {
+              console.log(`Triggering workflow for region ${region}`);
+              const response = await github.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'workflow-id-of-Polybot-Infrastructure-Terraform-Specific-Region',
+                ref: 'main',
+                inputs: {
+                  region-code: region
+                }
+              });
+              console.log(response);
+            }

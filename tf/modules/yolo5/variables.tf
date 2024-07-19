@@ -7,7 +7,12 @@ variable "instance_type_yolo5" {
   description = "Instance type for the instance."
   type        = string
 }
-
+# IAM Role and Policies
+variable "iam_role_name" {
+  description = "Iam Role name for the instance"
+  type = string
+  default = "galgu-role-yolo5-tf"
+}
 variable "key_pair_name_yolo5" {
   description = "Key pair name for SSH access."
   type        = string
@@ -41,8 +46,42 @@ variable "asg_desired_capacity" {
   default     = 1
 }
 
-variable "iam_role_name" {
-  description = "IAM Role name for the instance profile."
+variable "dynamodb_table_name" {
+  description = "The name of the DynamoDB table"
   type        = string
-  default     = "galgu-role-terraform-yolo5"
+  default     = "yolo5_predictions"
+}
+
+variable "dynamodb_billing_mode" {
+  description = "The billing mode of the DynamoDB table"
+  type        = string
+  default     = "PAY_PER_REQUEST"
+}
+variable "iam_instance_profile_name" {
+  default = ""
+}
+
+
+variable "cpu_utilization_high_threshold" {
+  description = "High CPU utilization threshold for scaling out"
+  type        = number
+  default     = 60  # Adjust as needed
+}
+
+variable "cpu_utilization_low_threshold" {
+  description = "Low CPU utilization threshold for scaling in"
+  type        = number
+  default     = 30  # Adjust as needed
+}
+
+variable "scale_out_cooldown" {
+  description = "Cooldown period in seconds for scale-out actions"
+  type        = number
+  default     = 300  # Example: 5 minutes (adjust as needed)
+}
+
+variable "scale_in_cooldown" {
+  description = "Cooldown period in seconds for scale-in actions"
+  type        = number
+  default     = 300  # Example: 5 minutes (adjust as needed)
 }

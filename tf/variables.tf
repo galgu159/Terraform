@@ -1,7 +1,7 @@
 variable "region" {
   description = "AWS region"
   type        = string
-  default     = ""
+  default     = "eu-west-3"
 }
 
 variable "vpc_cidr" {
@@ -10,21 +10,23 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "vpc_azs" {
+variable "availability_zone" {
   description = "availability zones"
   default = ""
 }
 
-variable "availability_zones" {
-  description = "availability zones"
-  default = ""
+variable "iam_role_name_polybot" {
+  description = "The name of the IAM role for the Polybot instance"
+  type        = string
+  default     = "polybot-role"
 }
 
-
-
-variable "public_subnet_cidrs" {
-  default = ""
+variable "dynamodb_table_name" {
+  description = "The name of the DynamoDB table"
+  type        = string
+  default     = "polybot_predictions"
 }
+
 
 variable "public_subnets" {
   description = "Public Subnet for PolyBot instances"
@@ -48,6 +50,10 @@ variable "key_pair_name_polybot" {
   default = ""
 }
 
+variable "my_queue" {
+  description = "queue"
+  default = ""
+}
 
 variable "instance_ami_yolo5" {
   description = "instance ami for the yolo5"
@@ -69,6 +75,35 @@ variable "lb_target_group_arn" {
   type        = string
 }
 
+variable "TF_VAR_certificate_arn" {
+  description = "ARN of the ACM certificate for HTTPS listener"
+  type        = string
+  default = ""
+}
+variable "certificate_arn" {
+  description = "The ARN of the ACM certificate for HTTPS"
+  type        = string
+}
+
+
 variable "aws_lb_target_group" {
+  default = ""
+}
+
+variable "cpu_utilization_high_threshold" {
+  default = ""
+}
+variable "cpu_utilization_low_threshold" {
+  default = ""
+}
+variable "scale_out_cooldown" {
+  default = ""
+}
+variable "scale_in_cooldown" {
+  default = ""
+}
+variable "telegram_token" {
+  description = "Telegram Token"
+  type = string
   default = ""
 }

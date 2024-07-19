@@ -1,0 +1,58 @@
+# This workflow is automatically called by the main pipeline and provisions the infrastructure for a specific region.
+# Need to give him region-code and TELEGRAM_TOKEN
+name: Polybot Infrastructure Terraform Specific Region
+
+on:
+  workflow_call:
+    inputs:
+      region-code:
+        required: true
+        type: string
+    secrets:
+      TELEGRAM_TOKEN:
+        required: true
+
+jobs:
+  Terraform:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    defaults:
+      run:
+        working-directory: ./tf  # The directory containing your Terraform configuration files
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Terraform CLI
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      # Step 3: Initialize Terraform
+      - name: Terraform init
+        run: terraform init
+
+      # Step 4: Select or create a new workspace for the specified region
+      - name: Terraform workspace select
+        run: terraform workspace select ${{ inputs.region-code }} || terraform workspace new ${{ inputs.region-code }}
+
+      # Step 5: Validate the Terraform configuration
+      - name: Terraform validate
+        run: terraform validate
+
+      # Step 6: Plan the Terraform deployment
+      - name: Terraform plan
+        run: | 
+          export TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }}
+          terraform plan -var-file=region.${{ inputs.region-code }}.tfvars
+
+      # Step 7: Apply the Terraform plan to deploy the infrastructure
+      - name: Terraform apply
+        run: |
+          export TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }}
+          terraform apply -auto-approve -var-file=region.${{ inputs.region-code }}.tfvars
