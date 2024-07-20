@@ -119,15 +119,17 @@ def consume():
                 # Send the message from my yolo5 to load balancer:
                 POLYBOT_RESULTS_URL = "https://galgu.int-devops.click/results"
                 try:
-                    response = requests.post(f'{POLYBOT_RESULTS_URL}', params={'predictionId': prediction_id})
+                    headers = {'Content-Type': 'application/json'}
+                    response = requests.get(POLYBOT_RESULTS_URL, json={'predictionId': prediction_id}, headers=headers)
                     response.raise_for_status()  # Raise an error for bad status codes
-                    logger.info(f'prediction: {prediction_id}. Notified Polybot microservice successfully')
+                    logger.info(f'Prediction {prediction_id}: Notified Polybot microservice successfully')
                 except requests.exceptions.RequestException as e:
-                    logger.error(f'prediction: {prediction_id}. Failed to notify Polybot microservice. Error: {str(e)}')
+                    logger.error(f'Prediction {prediction_id}: Failed to notify Polybot microservice. Error: {str(e)}')
                     if response is not None:
                         logger.error(f'Response status code: {response.status_code}')
                         logger.error(f'Response text: {response.text}')
-
+                    else:
+                        logger.error('No response received from server')
             else:
                 logger.error(f'Prediction: {prediction_id}{original_img_path}. prediction result not found')
                 sqs_client.delete_message(QueueUrl=queue_name, ReceiptHandle=receipt_handle)

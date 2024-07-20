@@ -13,6 +13,8 @@ from img_proc import Img
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+queue_name = os.environ['SQS_QUEUE_NAME']
+region_name = os.environ['REGION']
 
 
 class Bot:
@@ -144,8 +146,15 @@ class ObjectDetectionBot(Bot):
 
                         try:
                             # Send job to queue
-                            sqs = boto3.client('sqs', region_name='eu-west-3')
-                            sqs_queue_url = 'https://sqs.eu-west-3.amazonaws.com/019273956931/galgu-PolybotServiceQueue'
+                            sqs = boto3.client('sqs', region_name=region_name)
+                            # Retrieve the queue URL
+                            try:
+                                response = sqs.get_queue_url(QueueName=queue_name)
+                                sqs_queue_url = response['QueueUrl']
+                                logger.info(f'Queue URL for {queue_name} is {sqs_queue_url}')
+                            except sqs.exceptions.QueueDoesNotExist:
+                                logger.error(f'Queue {queue_name} does not exist.')
+                                raise
                             response = sqs.send_message(
                                 QueueUrl=sqs_queue_url,
                                 MessageBody=json.dumps(json_data)

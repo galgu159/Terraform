@@ -64,8 +64,9 @@ def webhook():
 
 @app.route(f'/results', methods=['POST'])
 def results():
-    dynamodb = boto3.resource('dynamodb', region_name='eu-west-3')
-    table = dynamodb.Table('galgu-PolybotService-DynamoDB')
+    region_name = os.environ['REGION']
+    dynamodb = boto3.resource('dynamodb', region_name=region_name)
+    table = dynamodb.Table('galgu-PolybotService-DynamoDB-tf')
 
     logger.info("Received request at /results endpoint")
     try:
