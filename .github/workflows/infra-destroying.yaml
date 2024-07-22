@@ -20,33 +20,26 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     strategy:
       matrix:
-        region: [us-east-1, eu-central-1]
+        region:
+          - us-east-1
+          - eu-central-1
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.0.0
 
-      - name: Determine if region is selected
-        id: check_region
-        run: |
-          echo "selected=false" >> $GITHUB_ENV
-          if [[ "${{ github.event.inputs[matrix.region] }}" == "true" ]]; then
-            echo "selected=true" >> $GITHUB_ENV
-          fi
-
       - name: Infrastructure destroying
-        if: env.selected == 'true'
+        if: ${{ github.event.inputs[ matrix.region ] == 'true' }}
         working-directory: ./tf
         run: |
-          # init terraform
+          # init terraform 
           terraform init
           
           # select workspace or create if needed
-          terraform workspace select ${{ matrix.region }} || terraform workspace new ${{ matrix.region }}
+          terraform workspace select ${{ matrix.region }}  || terraform workspace new ${{ matrix.region }}
 
-          # tf destroy
-          terraform destroy -auto-approve -var-file="terraform/region.${{ matrix.region }}.tfvars"
+          # tf destroy 
+          terraform destroy -auto-approve -var-file=${{ matrix.region }}

@@ -132,23 +132,6 @@ resource "aws_autoscaling_group" "yolo5_asg" {
   force_delete = true
 }
 
-# Define DynamoDB table
-resource "aws_dynamodb_table" "PolybotService-DynamoDB" {
-  name           = "galgu-PolybotService-DynamoDB-tf"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 1
-  write_capacity = 1
-  hash_key       = "prediction_id"
-  attribute {
-    name = "prediction_id"
-    type = "S"
-  }
-
-  tags = {
-    Name = "galgu-PolybotService-DynamoDB-tf"
-  }
-}
-
 resource "aws_iam_role" "yolo5_role" {
   name = var.iam_role_name
 

@@ -9,12 +9,67 @@ import telebot
 from loguru import logger
 from telebot.types import InputFile
 from img_proc import Img
+from botocore.exceptions import ClientError
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-queue_name = os.environ['SQS_QUEUE_NAME']
 region_name = os.environ['REGION']
+
+
+def get_secret_Queue():
+    secret_name = "galgu-sqs_queue_name-tf"
+    region_name = os.environ.get("AWS_REGION")
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+        secret = get_secret_value_response.get('SecretString')
+        if secret:
+            secret_dict_Queue = json.loads(secret)
+            Queue_name = secret_dict_Queue.get('sqs_queue_name')
+            return Queue_name
+        else:
+            logger.error("No secret string found")
+    except ClientError as e:
+        logger.error(f"Error retrieving Queue secret {secret_name}: {e}")
+        raise e
+    return None
+
+
+def get_secret_Bucket():
+    secret_name = "galgu-bucket_name-tf"
+    region_name = os.environ.get("AWS_REGION")
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+        secret = get_secret_value_response.get('SecretString')
+        if secret:
+            secret_dict_Queue = json.loads(secret)
+            Queue_name = secret_dict_Queue.get('bucket_name')
+            return Queue_name
+        else:
+            logger.error("No secret string found")
+    except ClientError as e:
+        logger.error(f"Error retrieving Bucket secret {secret_name}: {e}")
+        raise e
+    return None
+
 
 
 class Bot:
@@ -125,12 +180,13 @@ class ObjectDetectionBot(Bot):
                     elif msg["caption"] == "predict":
                         self.send_text(msg['chat']['id'], "Your image is being processed. Please wait...")
                         logger.info(f'Photo downloaded to: {img_path}')
-
+                        # Create an env of queue name
+                        queue_name = get_secret_Queue()
                         # Split photo name
                         photo_s3_name = img_path.split("/")
 
-                        # Get the bucket name from the environment variable
-                        images_bucket = os.environ['BUCKET_NAME']
+                        # Get the bucket name from secret in aws
+                        images_bucket = get_secret_Bucket()
 
                         # Upload the image to S3
                         s3_client = boto3.client('s3')

@@ -3,6 +3,7 @@ import time
 from pathlib import Path
 import boto3
 import requests
+from botocore.exceptions import ClientError
 from detect import run
 import uuid
 import yaml
@@ -15,15 +16,96 @@ from bson import json_util
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-images_bucket = os.environ['BUCKET_NAME']
-queue_name = os.environ['SQS_QUEUE_NAME']
 region_name = os.environ['REGION']
 
-sqs_client = boto3.client('sqs', region_name=region_name)
 
 with open("data/coco128.yaml", "r") as stream:
     names = yaml.safe_load(stream)['names']
 
+def get_secret_dynamoDB():
+    secret_name = "galgu-dynamodb_name-tf"
+    region_name = os.environ.get("AWS_REGION")
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+        secret = get_secret_value_response.get('SecretString')
+        if secret:
+            secret_dict_dynamoDB = json.loads(secret)
+            dynamodb_name = secret_dict_dynamoDB.get('dynamodb_name')
+            return dynamodb_name
+        else:
+            logger.error("No secret string found")
+    except ClientError as e:
+        logger.error(f"Error retrieving DynamoDB secret {secret_name}: {e}")
+        raise e
+    return None
+
+
+def get_secret_Bucket():
+    secret_name = "galgu-bucket_name-tf"
+    region_name = os.environ.get("AWS_REGION")
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+        secret = get_secret_value_response.get('SecretString')
+        if secret:
+            secret_dict_Queue = json.loads(secret)
+            Queue_name = secret_dict_Queue.get('bucket_name')
+            return Queue_name
+        else:
+            logger.error("No secret string found")
+    except ClientError as e:
+        logger.error(f"Error retrieving Bucket secret {secret_name}: {e}")
+        raise e
+    return None
+
+
+def get_secret_Queue():
+    secret_name = "galgu-sqs_queue_name-tf"
+    region_name = os.environ.get("AWS_REGION")
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+        secret = get_secret_value_response.get('SecretString')
+        if secret:
+            secret_dict_Queue = json.loads(secret)
+            Queue_name = secret_dict_Queue.get('sqs_queue_name')
+            return Queue_name
+        else:
+            logger.error("No secret string found")
+    except ClientError as e:
+        logger.error(f"Error retrieving Queue secret {secret_name}: {e}")
+        raise e
+    return None
+
+
+images_bucket = get_secret_Bucket()
+queue_name = get_secret_Queue()
+sqs_client = boto3.client('sqs', region_name=region_name)
 
 def consume():
     # The function runs in an infinite loop, continually polling the SQS queue for new messages.
@@ -110,9 +192,12 @@ def consume():
                 # TODO store the prediction_summary in a DynamoDB table
                 # TODO perform a GET request to Polybot to `/results` endpoint
                 # Store the prediction_summary in a DynamoDB table
+                dynamodb_name = get_secret_dynamoDB()
+                if not dynamodb_name:
+                    return 'DynamoDB name not found', 500
+
                 dynamodb = boto3.resource('dynamodb', region_name=region_name)
-                logger.info(f"DynamoDB Resource: {dynamodb}")
-                table = dynamodb.Table('galgu-PolybotService-DynamoDB-tf')
+                table = dynamodb.Table(dynamodb_name)
                 logger.info(f"DynamoDB Table: {table}")
                 table.put_item(Item=prediction_summary)
 

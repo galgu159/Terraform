@@ -5,10 +5,5 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY . .
-ENV TELEGRAM_APP_URL="galgu.int-devops.click"
-ENV BUCKET_NAME="galgu-bucket"
-ENV SQS_QUEUE_NAME="galgu-PolybotServiceQueue"
 ENV REGION="us-east-2"
-ENV DYNAMODB_TABLE_NAME="galgu-PolybotService-DynamoDB-tf"
-# ENV S3_PREDICTED_URL="https://galgu-bucket.s3.eu-north-1.amazonaws.com/"
 CMD ["python3", "app.py"]

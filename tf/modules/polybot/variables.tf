@@ -36,3 +36,4 @@ variable "domain_name" {
   type        = string
   default = "galgu.int-devops.click"
 }
+

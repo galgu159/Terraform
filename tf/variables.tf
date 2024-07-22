@@ -84,7 +84,10 @@ variable "certificate_arn" {
   description = "The ARN of the ACM certificate for HTTPS"
   type        = string
 }
-
+variable "bucket_name" {
+  description = "The bucket name"
+  type        = string
+}
 
 variable "aws_lb_target_group" {
   default = ""
@@ -105,5 +108,16 @@ variable "scale_in_cooldown" {
 variable "telegram_token" {
   description = "Telegram Token"
   type = string
-  default = ""
+}
+variable "TELEGRAM_APP_URL" {
+  description = "Telegram URL"
+  type = string
+}
+variable "sqs_queue_name" {
+  description = "The name of the SQS queue"
+  type        = string
+}
+variable "dynamoDB_name" {
+  description = "The name of the dynamo DB"
+  type        = string
 }

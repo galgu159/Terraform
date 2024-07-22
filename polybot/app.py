@@ -15,8 +15,8 @@ app = flask.Flask(__name__)
 # return my secret from aws
 def get_secret():
 
-    secret_name = "TELEGRAM_TOKEN"
-    region_name = "eu-west-3"
+    secret_name = "galgu-bot_token"
+    region_name = os.environ.get("AWS_REGION")
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
@@ -42,13 +42,75 @@ def get_secret():
 secret_json_str = get_secret()
 if secret_json_str:
     secret_dict = json.loads(secret_json_str)
-    TELEGRAM_TOKEN = secret_dict.get('TELEGRAM_TOKEN')
+    TELEGRAM_TOKEN = secret_dict.get('galgu-bot_token-tf')
 else:
     print("Failed to retrieve the secret")
 
-TELEGRAM_APP_URL = os.environ['TELEGRAM_APP_URL']
+
+def get_secret_url():
+
+    secret_name = "galgu-TELEGRAM_APP_URL-tf"
+    region_name = os.environ.get("AWS_REGION")
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        # For a list of exceptions thrown, see
+        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+        raise e
+
+    secret = get_secret_value_response['SecretString']
+    print(secret)
+    return secret
+
+
+secret_json_str = get_secret()
+if secret_json_str:
+    secret_dict = json.loads(secret_json_str)
+    TELEGRAM_APP_URL = secret_dict.get('TELEGRAM_APP_URL')
+else:
+    print("Failed to retrieve the secret")
+
 print(TELEGRAM_TOKEN)
 print(TELEGRAM_APP_URL)
+
+
+def get_secret_dynamoDB():
+    secret_name = "galgu-dynamodb_name-tf"
+    region_name = os.environ.get("AWS_REGION")
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+        secret = get_secret_value_response.get('SecretString')
+        if secret:
+            secret_dict_dynamoDB = json.loads(secret)
+            dynamodb_name = secret_dict_dynamoDB.get('dynamodb_name')
+            return dynamodb_name
+        else:
+            logger.error("No secret string found")
+    except ClientError as e:
+        logger.error(f"Error retrieving DynamoDB secret {secret_name}: {e}")
+        raise e
+
+    return None
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -65,8 +127,12 @@ def webhook():
 @app.route(f'/results', methods=['POST'])
 def results():
     region_name = os.environ['REGION']
+    dynamodb_name = get_secret_dynamoDB()
+    if not dynamodb_name:
+        return 'DynamoDB name not found', 500
+
     dynamodb = boto3.resource('dynamodb', region_name=region_name)
-    table = dynamodb.Table('galgu-PolybotService-DynamoDB-tf')
+    table = dynamodb.Table(dynamodb_name)
 
     logger.info("Received request at /results endpoint")
     try:

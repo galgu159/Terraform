@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+env:
 
 jobs:
   build-deploy:
@@ -75,7 +76,7 @@ jobs:
               ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$PUBLIC_IP "sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/polybot:latest"
               ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$PUBLIC_IP "sudo docker stop polybot || true"
               ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$PUBLIC_IP "sudo docker rm polybot || true"
-              ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$PUBLIC_IP "sudo docker run -d --restart always --name polybot -p 8443:8443 ${{ secrets.DOCKERHUB_USERNAME }}/polybot:latest"
+              ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$PUBLIC_IP "sudo docker run -d --restart always --name polybot -p 8443:8443 -e region name = ${{ secrets.DOCKERHUB_USERNAME }}/polybot:latest" 
               break
             else
               echo "SSH connection to $PUBLIC_IP failed. Retrying in 10 seconds..."

@@ -84,19 +84,62 @@ resource "aws_subnet" "public2" {
 
 # S3 Bucket
 resource "aws_s3_bucket" "polybot_bucket" {
-  bucket = "galgu-bucket"
+  bucket = var.bucket_name
 
   tags = {
     Name      = "galgu-bucket"
     Terraform = "true"
   }
 }
+# Define DynamoDB table
+resource "aws_dynamodb_table" "PolybotService-DynamoDB" {
+  name           = var.dynamoDB_name
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 1
+  write_capacity = 1
+  hash_key       = "prediction_id"
+  attribute {
+    name = "prediction_id"
+    type = "S"
+  }
 
+  tags = {
+    Name = "galgu-PolybotService-DynamoDB-tf"
+  }
+}
+# SQS Queue and Policy
+resource "aws_sqs_queue" "polybot_queue" {
+  name = var.sqs_queue_name
+  tags = {
+    Name      = "galgu-PolybotServiceQueue"
+    Terraform = "true"
+  }
+}
 
+resource "aws_sqs_queue_policy" "polybot_queue_policy" {
+  queue_url = aws_sqs_queue.polybot_queue.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Id      = "__default_policy_ID"
+    Statement = [
+      {
+        Sid       = "__owner_statement"
+        Effect    = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::019273956931:root"
+        }
+        Action   = "SQS:*"
+        Resource = aws_sqs_queue.polybot_queue.arn
+      }
+    ]
+  })
+}
+# telegram_token
 resource "aws_secretsmanager_secret" "telegram_token" {
-  name = "galgu-telegram_bot_token-tf-v7"  # Ensure this name is unique
+  name = "galgu-bot_token"  # Ensure this name is unique
 
-  description = "Example secret created via Terraform"
+  description = "telegram token per region"
 
   tags = {
     Environment = "DevOps Learning"
@@ -108,7 +151,82 @@ resource "aws_secretsmanager_secret" "telegram_token" {
 resource "aws_secretsmanager_secret_version" "example_secret_version" {
   secret_id     = aws_secretsmanager_secret.telegram_token.id
   secret_string = jsonencode({
-    galgu-telegram_bot_token-tf-v7        = var.telegram_token
+    galgu-bot_token-tf        = var.telegram_token
+  })
+}
+# sqs_queue_name
+resource "aws_secretsmanager_secret" "sqs_queue_name" {
+  name = "galgu-sqs_queue_name-tf"  # Ensure this name is unique
+
+  description = "sqs queue name"
+
+  tags = {
+    Environment = "DevOps Learning"
+    Owner       = "DevOps Team"
+    Project     = "Terraform Project"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "example_secret_version" {
+  secret_id     = aws_secretsmanager_secret.sqs_queue_name.id
+  secret_string = jsonencode({
+    sqs_queue_name            = var.sqs_queue_name
+  })
+}
+# dynamodb_name
+resource "aws_secretsmanager_secret" "dynamodb_name" {
+  name = "galgu-dynamodb_name-tf"  # Ensure this name is unique
+
+  description = "dynamodb name"
+
+  tags = {
+    Environment = "DevOps Learning"
+    Owner       = "DevOps Team"
+    Project     = "Terraform Project"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "example_secret_version" {
+  secret_id     = aws_secretsmanager_secret.dynamodb_name.id
+  secret_string = jsonencode({
+    dynamodb_name             = var.dynamoDB_name
+  })
+}
+# bucket_name
+resource "aws_secretsmanager_secret" "bucket_name" {
+  name = "galgu-bucket_name-tf"  # Ensure this name is unique
+
+  description = "telegram token per region"
+
+  tags = {
+    Environment = "DevOps Learning"
+    Owner       = "DevOps Team"
+    Project     = "Terraform Project"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "example_secret_version" {
+  secret_id     = aws_secretsmanager_secret.bucket_name.id
+  secret_string = jsonencode({
+    bucket_name               = var.bucket_name
+  })
+}
+resource "aws_secretsmanager_secret" "TELEGRAM_APP_URL" {
+  name = "galgu-TELEGRAM_APP_URL-tf"  # Ensure this name is unique
+
+  description = "telegram token per region"
+
+  tags = {
+    Environment = "DevOps Learning"
+    Owner       = "DevOps Team"
+    Project     = "Terraform Project"
+  }
+}
+
+resource "aws_secretsmanager_secret_version" "example_secret_version" {
+  secret_id     = aws_secretsmanager_secret.TELEGRAM_APP_URL.id
+  secret_string = jsonencode({
+    TELEGRAM_APP_URL          = var.TELEGRAM_APP_URL
   })
 }
 

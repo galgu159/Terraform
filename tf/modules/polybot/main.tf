@@ -31,7 +31,7 @@ resource "aws_instance" "polybot_instance2" {
   }
 }
 
-# IAM Role and Policies only if it doesn't already exist
+# IAM Role and Policies
 resource "aws_iam_role" "polybot_service_role" {
   name = var.iam_role_name
 
@@ -217,33 +217,4 @@ resource "aws_lb_target_group_attachment" "polybot_instance2_attachment" {
   target_group_arn = aws_lb_target_group.polybot_tg.arn
   target_id        = aws_instance.polybot_instance2.id
   port             = 8443
-}
-
-# SQS Queue and Policy
-resource "aws_sqs_queue" "polybot_queue" {
-  name = "galgu-PolybotServiceQueue"
-  tags = {
-    Name      = "galgu-PolybotServiceQueue"
-    Terraform = "true"
-  }
-}
-
-resource "aws_sqs_queue_policy" "polybot_queue_policy" {
-  queue_url = aws_sqs_queue.polybot_queue.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Id      = "__default_policy_ID"
-    Statement = [
-      {
-        Sid       = "__owner_statement"
-        Effect    = "Allow"
-        Principal = {
-          AWS = "arn:aws:iam::019273956931:root"
-        }
-        Action   = "SQS:*"
-        Resource = aws_sqs_queue.polybot_queue.arn
-      }
-    ]
-  })
 }
