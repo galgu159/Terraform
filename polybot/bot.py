@@ -16,75 +16,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 region_name = os.environ['REGION']
-
-def get_secret_Queue():
-    secret_name = "galgu-sqs_queue_name-tf"
-    region_name = os.environ.get("AWS_REGION")
-
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
-
-    try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
-    except ClientError as e:
-        # For a list of exceptions thrown, see
-        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-        raise e
-
-    secret = get_secret_value_response['SecretString']
-    print(secret)
-    return secret
-
-
-secret_json_str = get_secret_Queue()
-if secret_json_str:
-    secret_dict = json.loads(secret_json_str)
-    Queue_name = secret_dict.get('galgu-sqs_queue_name-tf')
-else:
-    print("Failed to retrieve the secret")
-print("queue name :::::")
-print(Queue_name)
-
-def get_secret_Bucket():
-    secret_name = "galgu-bucket_name-tf"
-    region_name = os.environ.get("AWS_REGION")
-
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
-
-    try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
-    except ClientError as e:
-        # For a list of exceptions thrown, see
-        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-        raise e
-
-    secret = get_secret_value_response['SecretString']
-    print(secret)
-    return secret
-
-
-secret_json_str = get_secret_Bucket()
-if secret_json_str:
-    secret_dict = json.loads(secret_json_str)
-    images_bucket = secret_dict.get('galgu-bucket_name-tf')
-else:
-    print("Failed to retrieve the secret")
-
-print("image name :::::")
-print(images_bucket)
+# Queue Name
+Queue_name = f"galgu-PolybotServiceQueue-{region_name}"
+logger.info(f"Queue Name: {Queue_name}")
+# Bucket create DynamoDB table name using f-string
+images_bucket = f"galgu-bucket-{region_name}"
+# Print DynamoDB name for verification
+logger.info(f"bucket Name: {images_bucket}")
 
 
 class Bot:

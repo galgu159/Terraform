@@ -12,6 +12,11 @@ from botocore.exceptions import ClientError
 app = flask.Flask(__name__)
 region_name = os.environ.get("AWS_REGION")
 logger.info(f"Using AWS Region: {region_name}")
+# Dynamically create DynamoDB table name using f-string
+DYNAMODB_NAME = f"galgu-PolybotService-DynamoDB-tf-{region_name}"
+# Print DynamoDB name for verification
+logger.info(f"DynamoDB Name: {DYNAMODB_NAME}")
+
 # return my secret from aws
 def get_secret():
 
@@ -84,41 +89,6 @@ else:
 print("with cut:")
 print(TELEGRAM_TOKEN)
 print(TELEGRAM_APP_URL)
-
-
-def get_secret_dynamoDB():
-    secret_name = "galgu-dynamodb_name-tf"
-    region_name = os.environ.get("AWS_REGION")
-
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
-
-    try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
-    except ClientError as e:
-        # For a list of exceptions thrown, see
-        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-        raise e
-
-    secret = get_secret_value_response['SecretString']
-    print(secret)
-    return secret
-
-
-secret_json_str = get_secret_dynamoDB()
-if secret_json_str:
-    secret_dict = json.loads(secret_json_str)
-    DYNAMODB_NAME = secret_dict.get('galgu-dynamodb_name-tf')
-else:
-    print("Failed to retrieve the secret")
-
-print(DYNAMODB_NAME)
 
 
 @app.route('/', methods=['GET'])

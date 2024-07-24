@@ -39,12 +39,10 @@ jobs:
 
       - name: Terraform plan
         run: | 
-          export TF_VAR_botToken=${{ secrets.TELEGRAM_TOKEN }}
-          export AWS_REGION=${{ secrets.AWS_REGION }}
+          export TF_VAR_telegram_token=${{ secrets.TELEGRAM_TOKEN }}
           terraform plan -var-file=region.${{ inputs.region-code }}.tfvars
 
       - name: Terraform apply
         run: |
-          export TF_VAR_botToken=${{ secrets.TELEGRAM_TOKEN }}
-          export AWS_REGION=${{ secrets.AWS_REGION }}
+          export TF_VAR_telegram_token=${{ secrets.TELEGRAM_TOKEN }}
           terraform apply -auto-approve -var-file=region.${{ inputs.region-code }}.tfvars

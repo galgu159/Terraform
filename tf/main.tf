@@ -155,63 +155,6 @@ resource "aws_secretsmanager_secret_version" "telegram_token_version" {
   })
 }
 
-resource "aws_secretsmanager_secret" "sqs_queue_name" {
-  name = "galgu-sqs_queue_name-tf"  # Ensure this name is unique
-
-  description = "sqs queue name"
-
-  tags = {
-    Environment = "DevOps Learning"
-    Owner       = "DevOps Team"
-    Project     = "Terraform Project"
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "sqs_queue_name_version" {
-  secret_id     = aws_secretsmanager_secret.sqs_queue_name.id
-  secret_string = jsonencode({
-    galgu-sqs_queue_name-tf = var.sqs_queue_name
-  })
-}
-
-resource "aws_secretsmanager_secret" "dynamodb_name" {
-  name = "galgu-dynamodb_name-tf"  # Ensure this name is unique
-
-  description = "dynamodb name"
-
-  tags = {
-    Environment = "DevOps Learning"
-    Owner       = "DevOps Team"
-    Project     = "Terraform Project"
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "dynamodb_name_version" {
-  secret_id     = aws_secretsmanager_secret.dynamodb_name.id
-  secret_string = jsonencode({
-    galgu-dynamodb_name-tf = var.dynamoDB_name
-  })
-}
-
-resource "aws_secretsmanager_secret" "bucket_name" {
-  name = "galgu-bucket_name-tf"  # Ensure this name is unique
-
-  description = "bucket name"
-
-  tags = {
-    Environment = "DevOps Learning"
-    Owner       = "DevOps Team"
-    Project     = "Terraform Project"
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "bucket_name_version" {
-  secret_id     = aws_secretsmanager_secret.bucket_name.id
-  secret_string = jsonencode({
-    galgu-bucket_name-tf = var.bucket_name
-  })
-}
-
 resource "aws_secretsmanager_secret" "TELEGRAM_APP_URL" {
   name = "galgu-TELEGRAM_APP_URL-tf"  # Ensure this name is unique
 
