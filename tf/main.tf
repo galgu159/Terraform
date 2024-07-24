@@ -135,7 +135,7 @@ resource "aws_sqs_queue_policy" "polybot_queue_policy" {
     ]
   })
 }
-# telegram_token
+# Secrets Manager
 resource "aws_secretsmanager_secret" "telegram_token" {
   name = "galgu-bot_token"  # Ensure this name is unique
 
@@ -148,13 +148,13 @@ resource "aws_secretsmanager_secret" "telegram_token" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "example_secret_version" {
+resource "aws_secretsmanager_secret_version" "telegram_token_version" {
   secret_id     = aws_secretsmanager_secret.telegram_token.id
   secret_string = jsonencode({
-    galgu-bot_token-tf        = var.telegram_token
+    galgu-bot_token = var.telegram_token
   })
 }
-# sqs_queue_name
+
 resource "aws_secretsmanager_secret" "sqs_queue_name" {
   name = "galgu-sqs_queue_name-tf"  # Ensure this name is unique
 
@@ -167,13 +167,13 @@ resource "aws_secretsmanager_secret" "sqs_queue_name" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "example_secret_version" {
+resource "aws_secretsmanager_secret_version" "sqs_queue_name_version" {
   secret_id     = aws_secretsmanager_secret.sqs_queue_name.id
   secret_string = jsonencode({
-    sqs_queue_name            = var.sqs_queue_name
+    galgu-sqs_queue_name-tf = var.sqs_queue_name
   })
 }
-# dynamodb_name
+
 resource "aws_secretsmanager_secret" "dynamodb_name" {
   name = "galgu-dynamodb_name-tf"  # Ensure this name is unique
 
@@ -186,17 +186,17 @@ resource "aws_secretsmanager_secret" "dynamodb_name" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "example_secret_version" {
+resource "aws_secretsmanager_secret_version" "dynamodb_name_version" {
   secret_id     = aws_secretsmanager_secret.dynamodb_name.id
   secret_string = jsonencode({
-    dynamodb_name             = var.dynamoDB_name
+    galgu-dynamodb_name-tf = var.dynamoDB_name
   })
 }
-# bucket_name
+
 resource "aws_secretsmanager_secret" "bucket_name" {
   name = "galgu-bucket_name-tf"  # Ensure this name is unique
 
-  description = "telegram token per region"
+  description = "bucket name"
 
   tags = {
     Environment = "DevOps Learning"
@@ -205,16 +205,17 @@ resource "aws_secretsmanager_secret" "bucket_name" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "example_secret_version" {
+resource "aws_secretsmanager_secret_version" "bucket_name_version" {
   secret_id     = aws_secretsmanager_secret.bucket_name.id
   secret_string = jsonencode({
-    bucket_name               = var.bucket_name
+    galgu-bucket_name-tf = var.bucket_name
   })
 }
+
 resource "aws_secretsmanager_secret" "TELEGRAM_APP_URL" {
   name = "galgu-TELEGRAM_APP_URL-tf"  # Ensure this name is unique
 
-  description = "telegram token per region"
+  description = "telegram app URL"
 
   tags = {
     Environment = "DevOps Learning"
@@ -223,13 +224,12 @@ resource "aws_secretsmanager_secret" "TELEGRAM_APP_URL" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "example_secret_version" {
+resource "aws_secretsmanager_secret_version" "TELEGRAM_APP_URL_version" {
   secret_id     = aws_secretsmanager_secret.TELEGRAM_APP_URL.id
   secret_string = jsonencode({
-    TELEGRAM_APP_URL          = var.TELEGRAM_APP_URL
+    galgu-TELEGRAM_APP_URL-tf = var.TELEGRAM_APP_URL
   })
 }
-
 
 module "polybot" {
   source               = "./modules/polybot"
@@ -240,6 +240,7 @@ module "polybot" {
   key_pair_name_polybot = var.key_pair_name_polybot
   iam_role_name         = var.iam_role_name_polybot
   certificate_arn       = var.certificate_arn
+  region                = var.region
 }
 
 
@@ -250,6 +251,7 @@ module "yolo5" {
   instance_type_yolo5    = var.instance_type_yolo5
   key_pair_name_yolo5    = var.key_pair_name_yolo5
   vpc_id                 = aws_vpc.main.id
+  region                 = var.region
   public_subnet_ids      = [aws_subnet.public1.id, aws_subnet.public2.id]
   asg_min_size           = 1
   asg_max_size           = 2

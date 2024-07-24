@@ -19,5 +19,9 @@ echo \
 apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+# Export environment variable
+echo "export AWS_REGION=${AWS_REGION}" >> /etc/environment
+source /etc/environment
+
 # Run the Docker container
-docker run -d --name polybot --restart always -p 8443:8443 -e AWS_REGION=ue-west-2  galgu/polybot:3
+docker run -d --name polybot --restart always -p 8443:8443 -e AWS_REGION=${AWS_REGION} galgu/polybot:4

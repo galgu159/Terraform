@@ -14,8 +14,8 @@ from botocore.exceptions import ClientError
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-region_name = os.environ['REGION']
 
+region_name = os.environ['REGION']
 
 def get_secret_Queue():
     secret_name = "galgu-sqs_queue_name-tf"
@@ -27,22 +27,29 @@ def get_secret_Queue():
         service_name='secretsmanager',
         region_name=region_name
     )
+
     try:
         get_secret_value_response = client.get_secret_value(
             SecretId=secret_name
         )
-        secret = get_secret_value_response.get('SecretString')
-        if secret:
-            secret_dict_Queue = json.loads(secret)
-            Queue_name = secret_dict_Queue.get('sqs_queue_name')
-            return Queue_name
-        else:
-            logger.error("No secret string found")
     except ClientError as e:
-        logger.error(f"Error retrieving Queue secret {secret_name}: {e}")
+        # For a list of exceptions thrown, see
+        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
         raise e
-    return None
 
+    secret = get_secret_value_response['SecretString']
+    print(secret)
+    return secret
+
+
+secret_json_str = get_secret_Queue()
+if secret_json_str:
+    secret_dict = json.loads(secret_json_str)
+    Queue_name = secret_dict.get('galgu-sqs_queue_name-tf')
+else:
+    print("Failed to retrieve the secret")
+print("queue name :::::")
+print(Queue_name)
 
 def get_secret_Bucket():
     secret_name = "galgu-bucket_name-tf"
@@ -54,22 +61,30 @@ def get_secret_Bucket():
         service_name='secretsmanager',
         region_name=region_name
     )
+
     try:
         get_secret_value_response = client.get_secret_value(
             SecretId=secret_name
         )
-        secret = get_secret_value_response.get('SecretString')
-        if secret:
-            secret_dict_Queue = json.loads(secret)
-            Queue_name = secret_dict_Queue.get('bucket_name')
-            return Queue_name
-        else:
-            logger.error("No secret string found")
     except ClientError as e:
-        logger.error(f"Error retrieving Bucket secret {secret_name}: {e}")
+        # For a list of exceptions thrown, see
+        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
         raise e
-    return None
 
+    secret = get_secret_value_response['SecretString']
+    print(secret)
+    return secret
+
+
+secret_json_str = get_secret_Bucket()
+if secret_json_str:
+    secret_dict = json.loads(secret_json_str)
+    images_bucket = secret_dict.get('galgu-bucket_name-tf')
+else:
+    print("Failed to retrieve the secret")
+
+print("image name :::::")
+print(images_bucket)
 
 
 class Bot:
@@ -184,9 +199,6 @@ class ObjectDetectionBot(Bot):
                         queue_name = get_secret_Queue()
                         # Split photo name
                         photo_s3_name = img_path.split("/")
-
-                        # Get the bucket name from secret in aws
-                        images_bucket = get_secret_Bucket()
 
                         # Upload the image to S3
                         s3_client = boto3.client('s3')

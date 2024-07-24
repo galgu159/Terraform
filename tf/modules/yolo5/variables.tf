@@ -85,3 +85,7 @@ variable "scale_in_cooldown" {
   type        = number
   default     = 300  # Example: 5 minutes (adjust as needed)
 }
+variable "region" {
+  default = ""
+  type = string
+}

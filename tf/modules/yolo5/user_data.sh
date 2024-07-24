@@ -19,5 +19,9 @@ echo \
 apt-get update
 apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+# Export environment variable
+echo "export AWS_REGION=${AWS_REGION}" >> /etc/environment
+source /etc/environment
+
 # Run the Docker container
-docker run -d --name yolo5 --restart always -p 8081:8081 galgu/yolo5:3
+docker run -d --name yolo5 --restart always -p 8081:8081 -e AWS_REGION=${AWS_REGION} galgu/yolo5:4
