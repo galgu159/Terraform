@@ -20,6 +20,8 @@ jobs:
       region-code: us-east-2
     secrets:
       TELEGRAM_TOKEN: ${{ secrets.US_EAST_2_TELEGRAM_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.US_EAST_2_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.US_EAST_2_AWS_SECRET_ACCESS_KEY }}
 
   eu-west-3:
     if: ${{ github.event.inputs.eu-west-3 == 'true' }}
@@ -28,3 +30,5 @@ jobs:
       region-code: eu-west-3
     secrets:
       TELEGRAM_TOKEN: ${{ secrets.EU_WEST_3_TELEGRAM_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.EU_WEST_3_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.EU_WEST_3_AWS_SECRET_ACCESS_KEY }}
