@@ -20,7 +20,7 @@ logger.info(f"DynamoDB Name: {DYNAMODB_NAME}")
 # return my secret from aws
 def get_secret():
 
-    secret_name = "galgu-bot_token"
+    secret_name = "telegram_token"
     region_name = os.environ.get("AWS_REGION")
 
     # Create a Secrets Manager client
@@ -48,48 +48,17 @@ def get_secret():
 secret_json_str = get_secret()
 if secret_json_str:
     secret_dict = json.loads(secret_json_str)
-    TELEGRAM_TOKEN = secret_dict.get('galgu-bot_token')
+    TELEGRAM_TOKEN = secret_dict.get('telegram_token')
 else:
     print("Failed to retrieve the secret")
 
 
-def get_secret_url():
-
-    secret_name = "galgu-TELEGRAM_APP_URL-tf"
-    region_name = os.environ.get("AWS_REGION")
-
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
-
-    try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
-    except ClientError as e:
-        # For a list of exceptions thrown, see
-        # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-        raise e
-
-    secret = get_secret_value_response['SecretString']
-    print(secret)
-    return secret
-
-
-secret_json_str = get_secret_url()
-if secret_json_str:
-    secret_dict = json.loads(secret_json_str)
-    TELEGRAM_APP_URL = secret_dict.get('galgu-TELEGRAM_APP_URL-tf')
-else:
-    print("Failed to retrieve the secret")
 
 print("with cut:")
 print(TELEGRAM_TOKEN)
-print(TELEGRAM_APP_URL)
 
+TELEGRAM_APP_URL="https://galgu.int-devops.click"
+print(TELEGRAM_APP_URL)
 
 @app.route('/', methods=['GET'])
 def index():

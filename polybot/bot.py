@@ -133,8 +133,6 @@ class ObjectDetectionBot(Bot):
                     elif msg["caption"] == "predict":
                         self.send_text(msg['chat']['id'], "Your image is being processed. Please wait...")
                         logger.info(f'Photo downloaded to: {img_path}')
-                        # Create an env of queue name
-                        queue_name = get_secret_Queue()
                         # Split photo name
                         photo_s3_name = img_path.split("/")
 
@@ -155,11 +153,11 @@ class ObjectDetectionBot(Bot):
                             sqs = boto3.client('sqs', region_name=region_name)
                             # Retrieve the queue URL
                             try:
-                                response = sqs.get_queue_url(QueueName=queue_name)
+                                response = sqs.get_queue_url(QueueName=Queue_name)
                                 sqs_queue_url = response['QueueUrl']
-                                logger.info(f'Queue URL for {queue_name} is {sqs_queue_url}')
+                                logger.info(f'Queue URL for {Queue_name} is {sqs_queue_url}')
                             except sqs.exceptions.QueueDoesNotExist:
-                                logger.error(f'Queue {queue_name} does not exist.')
+                                logger.error(f'Queue {Queue_name} does not exist.')
                                 raise
                             response = sqs.send_message(
                                 QueueUrl=sqs_queue_url,

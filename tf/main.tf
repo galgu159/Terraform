@@ -85,7 +85,9 @@ resource "aws_subnet" "public2" {
 # S3 Bucket
 resource "aws_s3_bucket" "polybot_bucket" {
   bucket = var.bucket_name
-
+  lifecycle {
+    prevent_destroy = false
+  }
   tags = {
     Name      = "galgu-bucket"
     Terraform = "true"
