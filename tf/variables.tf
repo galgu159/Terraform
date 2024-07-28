@@ -109,10 +109,6 @@ variable "telegram_token" {
   description = "Telegram Token"
   type = string
 }
-variable "TELEGRAM_APP_URL" {
-  description = "Telegram URL"
-  type = string
-}
 variable "sqs_queue_name" {
   description = "The name of the SQS queue"
   type        = string
