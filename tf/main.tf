@@ -157,24 +157,6 @@ resource "aws_secretsmanager_secret_version" "telegram_token_version" {
   })
 }
 
-resource "aws_secretsmanager_secret" "TELEGRAM_APP_URL" {
-  name = "galgu-TELEGRAM_APP_URL-tf"  # Ensure this name is unique
-
-  description = "telegram app URL"
-
-  tags = {
-    Environment = "DevOps Learning"
-    Owner       = "DevOps Team"
-    Project     = "Terraform Project"
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "TELEGRAM_APP_URL_version" {
-  secret_id     = aws_secretsmanager_secret.TELEGRAM_APP_URL.id
-  secret_string = jsonencode({
-    galgu-TELEGRAM_APP_URL-tf = var.TELEGRAM_APP_URL
-  })
-}
 
 module "polybot" {
   source               = "./modules/polybot"

@@ -13,4 +13,4 @@ telegram_token = "7115733170:AAGR1igqy4yYpfnSWaLCL_JMiOVKZgluY2U"
 sqs_queue_name = "galgu-PolybotServiceQueue-us-east-2"
 dynamoDB_name =  "galgu-PolybotService-DynamoDB-tf-us-east-2"
 bucket_name = "galgu-bucket-us-east-2"
-TELEGRAM_APP_URL = "https://t.me/Galgu_ohio_bot"
+
