@@ -87,6 +87,7 @@ variable "certificate_arn" {
 variable "bucket_name" {
   description = "The bucket name"
   type        = string
+  default     = "galgu-bucket-us-east-2"
 }
 
 variable "aws_lb_target_group" {
