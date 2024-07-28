@@ -33,6 +33,9 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
 
+      - name: List files for debugging
+        run: ls -la tf
+
       - name: Terraform Init
         run: terraform init
         working-directory: tf
