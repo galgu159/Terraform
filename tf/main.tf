@@ -170,6 +170,7 @@ module "polybot" {
   region                = var.region
   is_main_region  = var.is_main_region
   iam_role_name         = var.iam_role_name
+  security_group_name = var.security_group_name
 }
 
 
