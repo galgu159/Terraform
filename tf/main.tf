@@ -81,14 +81,9 @@ resource "aws_subnet" "public2" {
     Name = "galgu-public-subnet2-tf"
   }
 }
-data "aws_s3_bucket" "existing_bucket" {
-  bucket = var.bucket_name
-}
 # S3 Bucket
 resource "aws_s3_bucket" "polybot_bucket" {
   bucket = var.bucket_name
-  # Only create the bucket if it doesn't already exist
-  count = length(data.aws_s3_bucket.existing_bucket.*.bucket) == 0 ? 1 : 0
   tags = {
     Name      = "galgu-bucket"
     Terraform = "true"
