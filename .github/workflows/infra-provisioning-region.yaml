@@ -7,6 +7,10 @@ on:
         description: 'AWS Region'
         required: true
         type: string
+      tfvars-file:
+        description: 'Terraform variables file'
+        required: true
+        type: string
     secrets:
       TELEGRAM_TOKEN:
         required: true
