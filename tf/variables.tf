@@ -118,3 +118,17 @@ variable "dynamoDB_name" {
   description = "The name of the dynamo DB"
   type        = string
 }
+variable "is_main_region" {
+  description = "if it is exist"
+  type = bool
+  default = false
+}
+variable "iam_role_name" {
+  description = "IAM Role name for the instance"
+  type = string
+  #default = "galgu-role-tf"
+}
+variable "security_group_name" {
+  description = "Security Group name for the instance"
+  type = string
+}

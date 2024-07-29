@@ -23,7 +23,7 @@ variable "key_pair_name_polybot" {
 variable "iam_role_name" {
   description = "IAM Role name for the instance"
   type = string
-  default = "galgu-role-tf"
+  # default = "galgu-role-tf"
 }
 
 variable "certificate_arn" {
@@ -38,5 +38,13 @@ variable "domain_name" {
 }
 variable "region" {
   default = ""
+  type = string
+}
+variable "is_main_region" {
+  description = "if it is exist"
+  type = bool
+}
+variable "security_group_name" {
+  description = "Security Group name for the instance"
   type = string
 }

@@ -81,13 +81,14 @@ resource "aws_subnet" "public2" {
     Name = "galgu-public-subnet2-tf"
   }
 }
-
+data "aws_s3_bucket" "existing_bucket" {
+  bucket = var.bucket_name
+}
 # S3 Bucket
 resource "aws_s3_bucket" "polybot_bucket" {
   bucket = var.bucket_name
-  lifecycle {
-    prevent_destroy = false
-  }
+  # Only create the bucket if it doesn't already exist
+  count = length(data.aws_s3_bucket.existing_bucket.*.bucket) == 0 ? 1 : 0
   tags = {
     Name      = "galgu-bucket"
     Terraform = "true"
@@ -165,9 +166,10 @@ module "polybot" {
   instance_ami_polybot = var.instance_ami_polybot
   instance_type_polybot = var.instance_type_polybot
   key_pair_name_polybot = var.key_pair_name_polybot
-  iam_role_name         = var.iam_role_name_polybot
   certificate_arn       = var.certificate_arn
   region                = var.region
+  is_main_region  = var.is_main_region
+  iam_role_name         = var.iam_role_name
 }
 
 
@@ -179,6 +181,7 @@ module "yolo5" {
   key_pair_name_yolo5    = var.key_pair_name_yolo5
   vpc_id                 = aws_vpc.main.id
   region                 = var.region
+  iam_role_name          = var.iam_role_name
   public_subnet_ids      = [aws_subnet.public1.id, aws_subnet.public2.id]
   asg_min_size           = 1
   asg_max_size           = 2

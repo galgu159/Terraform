@@ -77,7 +77,7 @@ resource "aws_iam_instance_profile" "polybot_instance_profile" {
 
 # Create the security group only if it doesn't already exist
 resource "aws_security_group" "polybot_sg" {
-  name        = "galgu_polybot_sg-tf"
+  name        = var.security_group_name
   description = "Allow SSH and HTTP traffic"
   vpc_id      = var.vpc_id
 
