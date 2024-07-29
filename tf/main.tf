@@ -133,25 +133,6 @@ resource "aws_sqs_queue_policy" "polybot_queue_policy" {
     ]
   })
 }
-# Secrets Manager
-resource "aws_secretsmanager_secret" "telegram_token" {
-  name = "galgu-bot_token"  # Ensure this name is unique
-
-  description = "telegram token per region"
-
-  tags = {
-    Environment = "DevOps Learning"
-    Owner       = "DevOps Team"
-    Project     = "Terraform Project"
-  }
-}
-
-resource "aws_secretsmanager_secret_version" "telegram_token_version" {
-  secret_id     = aws_secretsmanager_secret.telegram_token.id
-  secret_string = jsonencode({
-    galgu-bot_token = var.telegram_token
-  })
-}
 
 
 module "polybot" {
