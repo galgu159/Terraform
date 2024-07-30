@@ -149,7 +149,6 @@ module "polybot" {
   security_group_name = var.security_group_name
 }
 
-
 module "yolo5" {
   source = "./modules/yolo5"
 
