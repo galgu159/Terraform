@@ -1,14 +1,9 @@
-name: Provision Infrastructure in Region
+name: Polybot Infrastructure Terraform Specific Region
 
 on:
   workflow_call:
     inputs:
       region-code:
-        description: 'AWS Region'
-        required: true
-        type: string
-      tfvars-file:
-        description: 'Terraform variables file'
         required: true
         type: string
     secrets:
@@ -53,9 +48,15 @@ jobs:
         run: terraform validate
 
       - name: Terraform plan
-        run: |
+        run: | 
           export TF_VAR_telegram_token=${{ secrets.TELEGRAM_TOKEN }}
           terraform plan -var-file=region.${{ inputs.region-code }}.tfvars
+          
+
+      - name: Terraform apply
+        run: |
+          export TF_VAR_telegram_token=${{ secrets.TELEGRAM_TOKEN }}
+          terraform apply -auto-approve -var-file=region.${{ inputs.region-code }}.tfvars
 
 
       - name: Terraform apply
