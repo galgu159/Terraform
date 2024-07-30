@@ -170,6 +170,6 @@ resource "aws_iam_role_policy_attachment" "secretsmanager_policy" {
 }
 
 resource "aws_iam_instance_profile" "yolo5_instance_profile" {
-  name = "yolo5-instance-profile"
+  name = "yolo5-instance-profile-${var.region}"
   role = aws_iam_role.yolo5_role.name
 }
