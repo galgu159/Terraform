@@ -132,3 +132,7 @@ variable "security_group_name" {
   description = "Security Group name for the instance"
   type = string
 }
+variable "iam_role_name_yolo" {
+  description = "IAM Role name for the instance"
+  type = string
+}

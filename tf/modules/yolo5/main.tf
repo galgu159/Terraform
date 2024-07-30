@@ -133,7 +133,7 @@ resource "aws_autoscaling_group" "yolo5_asg" {
 }
 
 resource "aws_iam_role" "yolo5_role" {
-  name = var.iam_role_name
+  name = var.iam_role_name_yolo
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",

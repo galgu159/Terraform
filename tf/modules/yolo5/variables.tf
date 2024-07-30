@@ -60,8 +60,10 @@ variable "dynamodb_billing_mode" {
 variable "iam_instance_profile_name" {
   default = ""
 }
-
-
+variable "iam_role_name_yolo" {
+  description = "IAM Role name for the instance"
+  type = string
+}
 variable "cpu_utilization_high_threshold" {
   description = "High CPU utilization threshold for scaling out"
   type        = number
