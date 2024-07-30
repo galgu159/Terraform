@@ -157,7 +157,7 @@ module "yolo5" {
   key_pair_name_yolo5    = var.key_pair_name_yolo5
   vpc_id                 = aws_vpc.main.id
   region                 = var.region
-  iam_role_name          = var.iam_role_name_yolo
+  iam_role_name_yolo     = var.iam_role_name_yolo
   public_subnet_ids      = [aws_subnet.public1.id, aws_subnet.public2.id]
   asg_min_size           = 1
   asg_max_size           = 2
