@@ -8,7 +8,7 @@ resource "aws_instance" "polybot_instance1" {
   associate_public_ip_address = true
   user_data              = base64encode(templatefile("${path.module}/user_data.sh", { AWS_REGION = var.region }))
   #user_data              = templatefile("${path.module}/user_data.sh", {AWS_REGION = "var.region" })
-  iam_instance_profile   = aws_iam_instance_profile.polybot_instance_profile.name
+  iam_instance_profile   = aws_iam_instance_profile.polybot_instance_profile[0].name
 
   tags = {
     Name      = "galgu-PolybotService1-tf"
@@ -24,7 +24,7 @@ resource "aws_instance" "polybot_instance2" {
   security_groups        = [aws_security_group.polybot_sg.id]
   associate_public_ip_address = true
   # user_data              = base64encode(file("${path.module}/user_data.sh"))
-  iam_instance_profile   = aws_iam_instance_profile.polybot_instance_profile.name
+  iam_instance_profile   = aws_iam_instance_profile.polybot_instance_profile[0].name
   user_data              = base64encode(templatefile("${path.module}/user_data.sh", { AWS_REGION = var.region }))
 
   tags = {
