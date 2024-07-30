@@ -33,8 +33,13 @@ resource "aws_instance" "polybot_instance2" {
   }
 }
 
+data "aws_iam_role" "existing_polybot_service_role" {
+  name = var.iam_role_name
+}
+
 # IAM Role and Policies
 resource "aws_iam_role" "polybot_service_role" {
+  count = length(data.aws_iam_role.existing_polybot_service_role.name) == 0 ? 1 : 0
   name = var.iam_role_name
 
   assume_role_policy = jsonencode({
@@ -50,30 +55,34 @@ resource "aws_iam_role" "polybot_service_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "dynamodb_full_access" {
+  count = length(data.aws_iam_role.existing_polybot_service_role.name) == 0 ? 1 : 0
   role       = aws_iam_role.polybot_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 resource "aws_iam_role_policy_attachment" "sqs_full_access" {
+  count = length(data.aws_iam_role.existing_polybot_service_role.name) == 0 ? 1 : 0
   role       = aws_iam_role.polybot_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "s3_full_access" {
+  count = length(data.aws_iam_role.existing_polybot_service_role.name) == 0 ? 1 : 0
   role       = aws_iam_role.polybot_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
 
 resource "aws_iam_role_policy_attachment" "secrets_manager_rw" {
+  count = length(data.aws_iam_role.existing_polybot_service_role.name) == 0 ? 1 : 0
   role       = aws_iam_role.polybot_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
 }
 
 resource "aws_iam_instance_profile" "polybot_instance_profile" {
+  count = length(data.aws_iam_role.existing_polybot_service_role.name) == 0 ? 1 : 0
   name = var.iam_role_name
   role = aws_iam_role.polybot_service_role.name
 }
-
 
 # Create the security group only if it doesn't already exist
 resource "aws_security_group" "polybot_sg" {
